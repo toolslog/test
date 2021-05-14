@@ -1,0 +1,59 @@
+name: 'GitHub Actions pull'
+
+on:
+  push:
+    branches: 
+      - master
+  schedule:
+   - cron: '30 * * * *'
+jobs:
+  jdbot_pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: set_time
+        run: |
+          cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+          date
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: lxk
+        timeout-minutes: 350
+        run: |
+          if [ -d lxk ]; then
+            \mv lxk ./old/lxk$(date +%Y%m%d%H%M%S)
+            docker-compose up -d
+            docker exec -i jd /bin/bash jup.sh
+            cd scripts
+            sudo -i
+            sudo rm -rf .git
+            cd ..
+            sudo \mv scripts lxk
+            echo "# 同步时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          else
+            docker-compose up -d
+            docker exec -i jd /bin/bash jup.sh
+            cd scripts
+            sudo -i
+            sudo rm -rf .git
+            cd ..
+            sudo \mv scripts lxk
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          fi    
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "⌚️$(date +%Y%m%d%H%M%S)" -a
+      - name: 'Push changes'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+      - name: 'Create a Release'
+        uses: elgohr/Github-Release-Action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          args: sync

@@ -1,0 +1,145 @@
+name: 'GitHub Actions pull'
+
+on:
+  push:
+    branches: 
+      - master
+  schedule:
+   - cron: '30 * * * *'
+jobs:
+  jdbot_pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: set_time
+        run: |
+          cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+          date
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: lxk
+        timeout-minutes: 350
+        run: |
+          if [ -d lxk ]; then
+            \mv lxk ./oldlxk/lxk$(date +%Y%m%d%H%M%S)
+            docker-compose up -d
+            docker exec -i jd /bin/bash jup.sh
+            cd lxk
+            sudo -i
+            sudo rm -rf .git
+            cd ..
+            echo "# 同步时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          else
+            docker-compose up -d
+            docker exec -i jd /bin/bash jup.sh
+            cd lxk
+            sudo -i
+            sudo rm -rf .git
+            cd ..
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          fi
+     - name: 'clone dust'
+        run: |
+          if [ -d dust ]; then
+            \mv dust ./olddust/dust$(date +%Y%m%d%H%M%S)
+            git clone https://github.com/monk-coder/dust.git
+            ls dust
+            cd dust 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            ls dust
+          else
+            git clone https://github.com/monk-coder/dust.git
+            ls dust
+            cd dust 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            ls dust
+          fi
+      - name: "clone NobyDa"
+        run: |
+          if [ -d NobyDa ]; then
+            \mv NobyDa ./oldNobyDa/NobyDa$(date +%Y%m%d%H%M%S)
+            git clone -b master https://github.com/NobyDa/Script.git
+            cd Script 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            \mv Script NobyDa
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          else
+            git clone -b master https://github.com/NobyDa/Script.git
+            cd Script 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            \mv Script NobyDa
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          fi
+      - name: "clone My-Actions"
+        run: |
+          if [ -d My-Actions ]; then
+            \mv My-Actions ./oldMy-Actions/My-Actions$(date +%Y%m%d%H%M%S)
+            git clone https://github.com/BlueskyClouds/My-Actions.git
+            cd My-Actions 
+            rm -rf .git 
+            echo "=================="
+            cd ..
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          else
+            git clone https://github.com/BlueskyClouds/My-Actions.git
+            cd My-Actions 
+            rm -rf .git 
+            echo "=================="
+            cd ..
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          fi
+      - name: "clone NobyDa"
+        run: |
+          if [ -d longzhuzhu ]; then
+            \mv longzhuzhu ./oldlongzhuzhu/longzhuzhu$(date +%Y%m%d%H%M%S)
+            git clone -b master https://github.com/nianyuguai/longzhuzhu.git
+            cd longzhuzhu 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          else
+            git clone -b master https://github.com/nianyuguai/longzhuzhu.git
+            cd longzhuzhu 
+            rm -rf .git 
+            rm README.md
+            echo "=================="
+            cd ..
+            echo "# 更新时间⌚️ 
+            > $(date +%Y%m%d%H%M%S)" > README.md
+          fi
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "⌚️$(date +%Y%m%d%H%M%S)" -a
+      - name: 'Push changes'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+      - name: 'Create a Release'
+        uses: elgohr/Github-Release-Action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          args: scripts
