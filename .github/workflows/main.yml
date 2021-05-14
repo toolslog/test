@@ -39,7 +39,7 @@ jobs:
             echo "# 更新时间⌚️ 
             > $(date +%Y%m%d%H%M%S)" > README.md
           fi
-     - name: 'clone dust'
+      - name: 'clone dust'
         run: |
           if [ -d dust ]; then
             \mv dust ./olddust/dust$(date +%Y%m%d%H%M%S)
