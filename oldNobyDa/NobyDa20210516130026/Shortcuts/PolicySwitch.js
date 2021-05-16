@@ -72,12 +72,8 @@ function nobyda() {
 			})
 		}
 		if (isLoon) {
-			return new Promise((resolve) => {
-				$config.getSubPolicys(groupName, (b) => {
-					const get = JSON.parse(b || '[]').map(n => n.name);
-					resolve(get)
-				})
-			})
+			const get = JSON.parse($config.getSubPolicys(groupName));
+			return get.map(n => n[0].name);
 		}
 		if (isQuanX) {
 			return new Promise((resolve) => {
