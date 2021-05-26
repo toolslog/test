@@ -16,29 +16,29 @@ jobs:
           date
       - name: Checkout
         uses: actions/checkout@v2
-      - name: lxk
-        timeout-minutes: 350
-        run: |
-          if [ -d lxk ]; then
-            \mv lxk ./oldlxk/lxk$(date +%Y%m%d%H%M%S)
-            docker-compose up -d
-            docker exec -i jd /bin/bash jup.sh
-            cd lxk
-            sudo -i
-            sudo rm -rf .git
-            cd ..
-            echo "# 同步时间⌚️ 
-            > $(date +%Y%m%d%H%M%S)" > README.md
-          else
-            docker-compose up -d
-            docker exec -i jd /bin/bash jup.sh
-            cd lxk
-            sudo -i
-            sudo rm -rf .git
-            cd ..
-            echo "# 更新时间⌚️ 
-            > $(date +%Y%m%d%H%M%S)" > README.md
-          fi
+#       - name: lxk
+#         timeout-minutes: 350
+#         run: |
+#           if [ -d lxk ]; then
+#             \mv lxk ./oldlxk/lxk$(date +%Y%m%d%H%M%S)
+#             docker-compose up -d
+#             docker exec -i jd /bin/bash jup.sh
+#             cd lxk
+#             sudo -i
+#             sudo rm -rf .git
+#             cd ..
+#             echo "# 同步时间⌚️ 
+#             > $(date +%Y%m%d%H%M%S)" > README.md
+#           else
+#             docker-compose up -d
+#             docker exec -i jd /bin/bash jup.sh
+#             cd lxk
+#             sudo -i
+#             sudo rm -rf .git
+#             cd ..
+#             echo "# 更新时间⌚️ 
+#             > $(date +%Y%m%d%H%M%S)" > README.md
+#           fi
       - name: 'clone dust'
         run: |
           if [ -d dust ]; then
